@@ -34,14 +34,40 @@ const gameboard = (function() {
 
 })();
 
+const startGame = (function() {
+
+    // Reset board before each game
+    gameboard.resetBoard();
+
+    // Create players
+    var player1Name = "Player 1";
+    var player2Name = "Player 2";
+    player1 = createPlayer(player1Name, "X");
+    player2 = createPlayer(player2Name, "O");
+
+    // Ask player 1 where to put piece
+    
+    do {
+        var input = prompt("Where would you like to place the piece? Enter two numbers in this format '0 1'");
+
+    } while (); // fix later
+
+
+    
+
+})();
+
 // Factory for players
-function createPlayer(name, order, piece) {
+function createPlayer(name, piece) {
     //
     let score = 0;
     const getScore = () => score;
     const addScore = () => score++;
+    const resetScore = () => {
+        score = 0;
+    }
 
-    return {name, order, piece, getScore, addScore};
+    return {name, piece, getScore, addScore, resetScore};
 }
 
 
