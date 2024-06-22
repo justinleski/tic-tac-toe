@@ -19,21 +19,39 @@ const gameboard = (function() {
     */
     const alertBoard = () => {
         temp = JSON.stringify(boardArr);
-        alert(temp);
     }
     const placePiece = (x, y, piece) => boardArr[x][y] = piece;
     const getBoard = () => boardArr;
+    const resetBoard = () => {
+        boardArr.forEach((row, rowIndex) => {
+            row.forEach((element, colIndex) => {
+                boardArr[rowIndex][colIndex] = null;})
+        })
+    }
 
     // Return the functions
-    return {alertBoard, placePiece};
+    return {alertBoard, placePiece, getBoard, resetBoard};
 
 })();
 
 // Factory for players
-function createPlayer(name) {
+function createPlayer(name, order, piece) {
     //
+    let score = 0;
+    const getScore = () => score;
+    const addScore = () => score++;
+
+    return {name, order, piece, getScore, addScore};
 }
+
+
 
 // Make instance of gameboard
 gameboard.placePiece(0,0, "X");
-gameboard.alertBoard(); // both work
+//gameboard.alertBoard(); // both work
+console.log(gameboard.getBoard());
+gameboard.resetBoard();
+console.log(gameboard.getBoard());
+gameboard.placePiece(1,1, "O");
+console.log(gameboard.getBoard());
+gameboard.resetBoard(); // ASYNC!!
