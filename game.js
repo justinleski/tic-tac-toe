@@ -24,7 +24,7 @@ const gameboard = (function() {
     const getBoard = () => boardArr;
     const resetBoard = () => {
         boardArr.forEach((row, rowIndex) => {
-            row.forEach((element, colIndex) => {
+            row.forEach((colIndex) => {
                 boardArr[rowIndex][colIndex] = null;})
         })
     }
