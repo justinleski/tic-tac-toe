@@ -48,12 +48,21 @@ const startGame = (function() {
     // Ask player 1 where to put piece
     
     do {
+        var isEmpty = true;
         var input = prompt("Where would you like to place the piece? Enter two numbers in this format '0 1'");
+        input.split(" ");
 
-    } while (); // fix later
+        // Check if user's attempt is valid
+        if (gameboard.getBoard[input[0]][input[1]] != null){
+            console.log("Invalid; gameboard is not empty here");
+            isEmpty = false;
+        } else {
+            placePiece(input[0], input[1], createPlayer.piece); // TODO: FIX! should not be createPlayer.piece
+            // I need logic to check this for each player - ideally a function where we pass in the player as a variable
+        }
 
+    } while (isEmpty == true); // fix later
 
-    
 
 })();
 
