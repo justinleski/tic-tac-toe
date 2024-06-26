@@ -1,22 +1,20 @@
 // make gameboard object
 const gameboard = (function() {
 
-    // Make an n x n board; default will be n = 3
-    var n = 3;
     var boardArr = [];
-   
-    // Make jagged array for board
-    for (var i = 0; i < n; i++){
-        const boardRow = [];
-        for (var j = 0; j < n; j++){
-            boardRow.push(null);
-        }
-        boardArr.push(boardRow);
-    }
 
-    /*
-    Functions
-    */
+    // Make an n x n board; default will be n = 3
+    const makeBoard = (n) => {
+        boardArr= [];
+        // Make jagged array for board
+        for (var i = 0; i < n; i++){
+            const boardRow = [];
+            for (var j = 0; j < n; j++){
+                boardRow.push(null);
+            }
+            boardArr.push(boardRow);
+        }
+    }
     const alertBoard = () => {
         temp = JSON.stringify(boardArr);
     }
@@ -40,24 +38,45 @@ const gameboard = (function() {
     }
 
     // Return the functions
-    return {alertBoard, placePiece, getBoard, resetBoard, checkBoard};
+    return {makeBoard, alertBoard, placePiece, getBoard, resetBoard, checkBoard};
 
 })();
 
-const startGame = (function() { // doesnt need to be Immeadiatley Invoked
+const startGame = (function() { // TODO: doesnt need to be Immeadiatley Invoked
 
-    // Reset board before each game
-    gameboard.resetBoard();
+    // Make board
+    var n = 3;
+    var playedTurns = 0;
+    var turnCoords = [];
+    gameboard.makeBoard(n);
 
-    // Create players
-    var player1Name = "Player 1";
-    var player2Name = "Player 2";
-    player1 = createPlayer(player1Name, "X");
-    player2 = createPlayer(player2Name, "O");
-
-    gameHandler.getPlayerInput(pass in player);
-
+    // Create players 1 and 2
+    const {player1, player2} = gameHandler.updatePlayers();
     
+    // Set turn to start with player 1
+    player1.isTurn();
+    do {
+        if (player1.getTurnStatus == true){
+            turnCoords = gameHandler.getPlayerInput(player1); // This could be made into a function since p1/2 are the same
+            gameboard.placePiece(turnCoords[0], turnCoords[1], player1.piece);
+            player1.noTurn();
+
+            // Give opposing player a turn
+            player2.isTurn();
+        } else {
+            turnCoords = gameHandler.getPlayerInput(player2);
+            gameboard.placePiece(turnCoords[0], turnCoords[1], player2.piece);
+            player2.noTurn();
+
+            // Give opposing player a turn
+            player1.isTurn();
+        }
+        
+
+
+    } while (playedTurns < 10);
+    
+
 
 })();
 
@@ -65,7 +84,7 @@ const gameHandler = (function() {
 
     // Pass in the current player object and get the piece member
     const getPlayerInput = (currentPlayer) => {
-        // Ask player 1 where to put piece
+        // Ask player where to put piece
         var isEmpty = true;
         do {
             
@@ -75,11 +94,19 @@ const gameHandler = (function() {
             // Call gameboard check func
             isEmpty = gameboard.checkBoard(currentPlayer, isEmpty);
 
+            if (isEmpty == false){
+                console.log("You cannot place a piece here as it is occupied. Try elsewhere.");
+            }
+
         } while (isEmpty == true); 
+
+        // Return the coordinates user provided
+        return input;
+
     } // end playerInput func
 
     const validateInput = () => {
-        if (playerTurn == true){
+        if (playerTurn == true){ // TODO: pass into function
             gameboard.placePiece(x, y, player.piece);
         } else {
             console.log("Error; not the current player's turn");
@@ -98,8 +125,21 @@ const gameHandler = (function() {
         }
     }
 
+    const updatePlayers = () => {
+        var player1Name = prompt("Player 1 name: ");
+        var player2Name = prompt("Player 2 name: ");
+        player1 = createPlayer(player1Name, "X");
+        player2 = createPlayer(player2Name, "O");
+
+        // Return both players as an object
+        return {
+            p1: player1,
+            p2: player2,
+        }
+    }
+
     // Return the function
-    return {getPlayerInput, validateInput, checkForWin};
+    return {getPlayerInput, validateInput, checkForWin, updatePlayers};
 
 })();
 
@@ -107,13 +147,17 @@ const gameHandler = (function() {
 function createPlayer(name, piece) {
     //
     let score = 0;
+    let currentTurn = false; // by default false
     const getScore = () => score;
     const addScore = () => score++;
     const resetScore = () => {
         score = 0;
     }
+    const getTurnStatus = () => currentTurn; 
+    const noTurn = () => currentTurn = false;
+    const isTurn = () => currentTurn = true;
 
-    return {name, piece, getScore, addScore, resetScore};
+    return {name, piece, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn};
 }
 
 
