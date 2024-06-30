@@ -42,45 +42,50 @@ const gameboard = (function() {
 
 })();
 
-const startGame = (function() { // TODO: doesnt need to be Immeadiatley Invoked
+function startGame() { 
 
     // Make board
     var n = 3;
     var playedTurns = 0;
-    var turnCoords = [];
     gameboard.makeBoard(n);
 
     // Create players 1 and 2
-    const {player1, player2} = gameHandler.updatePlayers();
+    const {p1, p2} = gameHandler.updatePlayers();
+    const player1 = gameHandler.p1; // wait maye this
     
+    console.log(player1.name);
+
     // Set turn to start with player 1
     player1.isTurn();
     do {
+        // Alternate player turns until 9 plays reached, i.e.
         if (player1.getTurnStatus == true){
-            turnCoords = gameHandler.getPlayerInput(player1); // This could be made into a function since p1/2 are the same
-            gameboard.placePiece(turnCoords[0], turnCoords[1], player1.piece);
-            player1.noTurn();
-
-            // Give opposing player a turn
-            player2.isTurn();
+            gameHandler.runPlayerTurn(player1, player2);
         } else {
-            turnCoords = gameHandler.getPlayerInput(player2);
-            gameboard.placePiece(turnCoords[0], turnCoords[1], player2.piece);
-            player2.noTurn();
-
-            // Give opposing player a turn
-            player1.isTurn();
+            gameHandler.runPlayerTurn(player2, player1);
         }
+        // Now we have to check for rows/columns of X/Os
         
 
-
-    } while (playedTurns < 10);
+        // Increment total count
+        playedTurns++;
+    } while (playedTurns < (n**2 + 1)); // i.e. < 10 when n=3
     
 
 
-})();
+}
 
 const gameHandler = (function() {
+
+    const runPlayerTurn = (currentPlayer, oppPlayer) => {
+        var turnCoords = [];
+        turnCoords = gameHandler.getPlayerInput(currentPlayer); 
+        gameboard.placePiece(turnCoords[0], turnCoords[1], currentPlayer.piece);
+        currentPlayer.noTurn();
+
+        // Give opposing player a turn
+        oppPlayer.isTurn();  
+    }
 
     // Pass in the current player object and get the piece member
     const getPlayerInput = (currentPlayer) => {
@@ -139,7 +144,7 @@ const gameHandler = (function() {
     }
 
     // Return the function
-    return {getPlayerInput, validateInput, checkForWin, updatePlayers};
+    return {runPlayerTurn, getPlayerInput, validateInput, checkForWin, updatePlayers};
 
 })();
 
@@ -148,21 +153,20 @@ function createPlayer(name, piece) {
     //
     let score = 0;
     let currentTurn = false; // by default false
-    const getScore = () => score;
+    const getScore = () => score; // redundant too?
     const addScore = () => score++;
-    const resetScore = () => {
-        score = 0;
-    }
-    const getTurnStatus = () => currentTurn; 
-    const noTurn = () => currentTurn = false;
-    const isTurn = () => currentTurn = true;
+    const resetScore = () => {score = 0};
+    const getTurnStatus = () => currentTurn; // redundant??????????????????????????????????????????
+    const noTurn = () => {currentTurn = false};
+    const isTurn = () => {currentTurn = true};
 
-    return {name, piece, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn};
+    return {name, piece, score, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn};
 }
 
 
 
 // Make instance of gameboard
+startGame();
 gameboard.placePiece(0,0, "X");
 //gameboard.alertBoard(); // both work
 console.log(gameboard.getBoard());
