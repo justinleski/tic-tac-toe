@@ -83,9 +83,10 @@ const gameHandler = (function() {
         // Check to see if coords the user selects are valid / empty
         var turnCoords = [];
         turnCoords = gameHandler.getPlayerInput(currentPlayer); // function loops until empty coords found
+        console.log("Turn coords are: "+turnCoords[0]);
 
         // After we checked to see if the coordinates are valid, place the piece
-        gameboard.placePiece(turnCoords[0], turnCoords[1], currentPlayer.piece);
+        gameboard.placePiece((turnCoords[0]), (turnCoords[1]), currentPlayer.piece);
         currentPlayer.noTurn();
 
         // Give opposing player a turn
@@ -94,17 +95,13 @@ const gameHandler = (function() {
 
     // Pass in the current player object and get the piece member
     const getPlayerInput = (currentPlayer) => {
+        var input = [null, null];
         // Ask player where to put piece
         var isEmpty = true;
         do {
             // Take input convert to string, and split it
-            var input = prompt(currentPlayer.name+": Where would you like to place the piece? Enter two numbers in this format '0 1'");
-            input = String(input);
-            input.split(" ");
-
-            // Once split, convert to int
-            input[0] = parseInt(input[0]);
-            input[1] = parseInt(input[1]);
+            input[0] = prompt(currentPlayer.name+": coord 1 - ");
+            input[1] = prompt(currentPlayer.name+": coord 2 - ");
             
             console.log("first item is integer afterwards: "+Number.isInteger(input[0]));// TODO: not parsing as int thus not placing in array; FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
