@@ -9,4 +9,4 @@
 - Undefiend references happened a lot; it was tricky figuring out why I could not access members of my factory function
 
 #### Validation
-- Taking user input and checking if it is in an empty spot posed tricky for the second player. My issue was that I
+- Taking user input and checking if it is in an empty spot posed tricky for the second player. My issue was that I tried to take an input as a string, then split and parse it rather than taking two inputs - similar to a button. When attempting to split the two inputs the second would end up as an index outside of the array which caused issues for obvious reasons. Note that this issue was faced while developping for the console; thinking of how this game would be interacted with in a GUI provided more clarity and easier to read code plus reduced this issue.
