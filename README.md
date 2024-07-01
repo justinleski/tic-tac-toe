@@ -1,5 +1,8 @@
 # tic-tac-toe
 
+### Purpose
+The purpose of this project is to reinforce modular programming while interacting with the DOM and GUI elements. To overcome this, I first started developping for the console, in a similar fashion to other traditional terminal apps, and then built the DOM interactions on top; this drastically simplified the process which otherwise stumped me while learning to develop for the web.
+
 ### Challenges Faced
 #### Async Functions
 - While testing values, I found that my `console.log` statements seemed to be async to the order of the code as I tried to call functions to see if they worked properly. `console.log` would always show the final result of my functions despite being placed in between them. This originally lead to confusion, but with minor testing I was able to find out that it may be async.

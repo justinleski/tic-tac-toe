@@ -77,6 +77,46 @@ function startGame() {
 
 }
 
+const boardChecker = (function() {
+
+    // Returns `true` if there exists a row with all of the values equal - i.e. [O,O,O]
+    const rows = () => {
+
+        piece = currentPlayer.piece;
+        board = gameboard.getBoard();
+        // Check each row for full of same piece
+        board.forEach((row) => {
+            if (allEqual(row)){
+                return true; // how do i indicate this is true for currentPlayer?
+            }
+        });
+        // no matches, then return false
+        return false;
+    }
+
+    const columns = () => {
+        board = gameboard.getBoard();
+
+        // For the number of rows (= to columns), create an array of the vertical columns
+        for (let y = 0; y < board.length; y++){
+            // Map out each column to a new (temporary) array, then check if this array consists of all of the same piece
+            const tempCol = board.map(x => x[y]);
+            if (allEqual(tempCol)){
+                return true;
+            }
+        }
+        // no matches, then return false
+        return false;
+    }
+
+    const diagonal = () => {
+        // Help
+    }
+
+    return {rows, columns, diagonal};
+
+})();
+
 const gameHandler = (function() {
 
     const runPlayerTurn = (currentPlayer, oppPlayer) => {
@@ -102,8 +142,6 @@ const gameHandler = (function() {
             // Take input convert to string, and split it
             input[0] = prompt(currentPlayer.name+": coord 1 - ");
             input[1] = prompt(currentPlayer.name+": coord 2 - ");
-            
-            console.log("first item is integer afterwards: "+Number.isInteger(input[0]));// TODO: not parsing as int thus not placing in array; FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
             // Call gameboard check func
             isEmpty = gameboard.checkBoard(isEmpty, input[0], input[1]);
@@ -147,8 +185,6 @@ function createPlayer(name, piece) {
 
     return {name, piece, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn};
 }
-
-
 
 // Make instance of gameboard
 startGame();
