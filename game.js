@@ -26,14 +26,12 @@ const gameboard = (function() {
                 boardArr[rowIndex][colIndex] = null;})
         })
     }
-    const checkBoard = (currentPlayer, isEmpty) => {
+    const checkBoard = (isEmpty, x, y) => {
         // Check if user's attempt is valid
-        if (gameboard.getBoard[input[0]][input[1]] != null){
-            console.log("Invalid; gameboard is not empty here");
-            isEmpty = false;
-            return isEmpty;
+        if (boardArr[x][y] != null){
+            return isEmpty = false;
         } else {
-            gameboard.placePiece(input[0], input[1], currentPlayer.piece); 
+            return isEmpty = true; 
         }
     }
 
@@ -50,36 +48,43 @@ function startGame() {
     gameboard.makeBoard(n);
 
     // Create players 1 and 2
-    const {p1, p2} = gameHandler.updatePlayers();
-    const player1 = gameHandler.p1; // wait maye this
-    
-    console.log(player1.name);
+    var player1Name = prompt("Player 1 name: ");
+    var player2Name = prompt("Player 2 name: ");
+    player1 = createPlayer(player1Name, "X");
+    player2 = createPlayer(player2Name, "O");
 
     // Set turn to start with player 1
     player1.isTurn();
+
     do {
         // Alternate player turns until 9 plays reached, i.e.
-        if (player1.getTurnStatus == true){
+        if (player1.getTurnStatus() == true){
+            console.log("Player 1's turn");
             gameHandler.runPlayerTurn(player1, player2);
         } else {
+            console.log("Player 2's turn");
             gameHandler.runPlayerTurn(player2, player1);
         }
         // Now we have to check for rows/columns of X/Os
-        
+        // gameboard.placePiece(0, 0, "X");
+        // gameboard.placePiece(1, 1, "Y");
+        console.table(gameboard.getBoard());
 
         // Increment total count
         playedTurns++;
+        console.log("Current no of played turns: "+playedTurns);
     } while (playedTurns < (n**2 + 1)); // i.e. < 10 when n=3
-    
-
 
 }
 
 const gameHandler = (function() {
 
     const runPlayerTurn = (currentPlayer, oppPlayer) => {
+        // Check to see if coords the user selects are valid / empty
         var turnCoords = [];
-        turnCoords = gameHandler.getPlayerInput(currentPlayer); 
+        turnCoords = gameHandler.getPlayerInput(currentPlayer); // function loops until empty coords found
+
+        // After we checked to see if the coordinates are valid, place the piece
         gameboard.placePiece(turnCoords[0], turnCoords[1], currentPlayer.piece);
         currentPlayer.noTurn();
 
@@ -92,31 +97,26 @@ const gameHandler = (function() {
         // Ask player where to put piece
         var isEmpty = true;
         do {
-            
-            var input = prompt("Where would you like to place the piece? Enter two numbers in this format '0 1'");
+            // Take input convert to string, and split it
+            var input = prompt(currentPlayer.name+": Where would you like to place the piece? Enter two numbers in this format '0 1'");
+            input = String(input);
             input.split(" ");
 
+            // Once split, convert to int
+            input[0] = parseInt(input[0]);
+            input[1] = parseInt(input[1]);
+            
+            console.log("first item is integer afterwards: "+Number.isInteger(input[0]));// TODO: not parsing as int thus not placing in array; FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
             // Call gameboard check func
-            isEmpty = gameboard.checkBoard(currentPlayer, isEmpty);
-
-            if (isEmpty == false){
-                console.log("You cannot place a piece here as it is occupied. Try elsewhere.");
-            }
-
-        } while (isEmpty == true); 
+            isEmpty = gameboard.checkBoard(isEmpty, input[0], input[1]);
+  
+        } while (isEmpty == false); // we want to loop until the user finds an empty spot
 
         // Return the coordinates user provided
         return input;
 
     } // end playerInput func
-
-    const validateInput = () => {
-        if (playerTurn == true){ // TODO: pass into function
-            gameboard.placePiece(x, y, player.piece);
-        } else {
-            console.log("Error; not the current player's turn");
-        }
-    }
 
     const checkForWin = (playedTurns) => {
         if (playedTurns >= 9) {
@@ -130,21 +130,8 @@ const gameHandler = (function() {
         }
     }
 
-    const updatePlayers = () => {
-        var player1Name = prompt("Player 1 name: ");
-        var player2Name = prompt("Player 2 name: ");
-        player1 = createPlayer(player1Name, "X");
-        player2 = createPlayer(player2Name, "O");
-
-        // Return both players as an object
-        return {
-            p1: player1,
-            p2: player2,
-        }
-    }
-
     // Return the function
-    return {runPlayerTurn, getPlayerInput, validateInput, checkForWin, updatePlayers};
+    return {runPlayerTurn, getPlayerInput, checkForWin};
 
 })();
 
@@ -153,25 +140,19 @@ function createPlayer(name, piece) {
     //
     let score = 0;
     let currentTurn = false; // by default false
-    const getScore = () => score; // redundant too?
+
+    const getScore = () => score; 
     const addScore = () => score++;
     const resetScore = () => {score = 0};
-    const getTurnStatus = () => currentTurn; // redundant??????????????????????????????????????????
+    const getTurnStatus = () => currentTurn; 
     const noTurn = () => {currentTurn = false};
     const isTurn = () => {currentTurn = true};
 
-    return {name, piece, score, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn};
+    return {name, piece, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn};
 }
 
 
 
 // Make instance of gameboard
 startGame();
-gameboard.placePiece(0,0, "X");
-//gameboard.alertBoard(); // both work
-console.log(gameboard.getBoard());
-gameboard.resetBoard();
-console.log(gameboard.getBoard());
-gameboard.placePiece(1,1, "O");
-console.log(gameboard.getBoard());
-gameboard.resetBoard(); // ASYNC!!
+
