@@ -1,3 +1,5 @@
+const allEqual = arr => arr.every( v => v === arr[0] ); // C
+
 // make gameboard object
 const gameboard = (function() {
 
@@ -95,25 +97,41 @@ const boardChecker = (function() {
     }
 
     const columns = () => {
-        board = gameboard.getBoard();
+        var board = gameboard.getBoard();
 
         // For the number of rows (= to columns), create an array of the vertical columns
         for (let y = 0; y < board.length; y++){
             // Map out each column to a new (temporary) array, then check if this array consists of all of the same piece
             const tempCol = board.map(x => x[y]);
             if (allEqual(tempCol)){
-                return true;
+                return true; // TODO: Replace this if{ } with just returning allEqual as it returns the same idea without the extra syntax
             }
         }
         // no matches, then return false
         return false;
     }
 
-    const diagonal = () => {
-        // Help
+    const diagonalUp = () => {
+        // Map from bottom left to top right of board
+        var board = gameboard.getBoard();
+        var diag = [...board].reverse().map((x, y) => x[y]);
+
+        if (allEqual(diag)) {
+            return true;
+        }
+        return false;
     }
 
-    return {rows, columns, diagonal};
+    const diagonalDown = () => {
+        var board = gameboard.getBoard
+        var diag = board.map((x, y) => x[y]);
+        if (allEqual(diag)) {
+            return true;
+        }
+        return false;
+    }
+
+    return {rows, columns, diagonalUp, diagonalDown};
 
 })();
 
