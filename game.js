@@ -1,4 +1,4 @@
-const allEqual = arr => arr.every( v => v === arr[0] ); // C
+const allEqual = arr => arr.every( v => (v === arr[0]) && (v != null) ); // Exclude null for the purpose of this game logic
 
 // make gameboard object
 const gameboard = (function() {
@@ -68,9 +68,10 @@ function startGame() {
             gameHandler.runPlayerTurn(player2, player1);
         }
         // Now we have to check for rows/columns of X/Os
-        // gameboard.placePiece(0, 0, "X");
-        // gameboard.placePiece(1, 1, "Y");
         console.table(gameboard.getBoard());
+        console.log("diag up:"+ boardChecker.diagonalUp()); // TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+        console.log("diqag down:"+ boardChecker.diagonalDown());
+        // Check for 
 
         // Increment total count
         playedTurns++;
@@ -84,16 +85,15 @@ const boardChecker = (function() {
     // Returns `true` if there exists a row with all of the values equal - i.e. [O,O,O]
     const rows = () => {
 
-        piece = currentPlayer.piece;
         board = gameboard.getBoard();
-        // Check each row for full of same piece
-        board.forEach((row) => {
-            if (allEqual(row)){
-                return true; // how do i indicate this is true for currentPlayer?
+        // Check each row for full of same piece 
+        for (const row of board) {
+            if (allEqual(row) == true){ 
+                return true; 
             }
-        });
-        // no matches, then return false
-        return false;
+        } // end for loop to check for true condition
+         return false;
+
     }
 
     const columns = () => {
@@ -103,32 +103,28 @@ const boardChecker = (function() {
         for (let y = 0; y < board.length; y++){
             // Map out each column to a new (temporary) array, then check if this array consists of all of the same piece
             const tempCol = board.map(x => x[y]);
-            if (allEqual(tempCol)){
-                return true; // TODO: Replace this if{ } with just returning allEqual as it returns the same idea without the extra syntax
+            if (allEqual(tempCol) == true){
+                return true; 
             }
         }
         // no matches, then return false
         return false;
     }
 
-    const diagonalUp = () => {
+    const diagonalUp = () => { // diag up starts from bottom left and goes to top right
         // Map from bottom left to top right of board
         var board = gameboard.getBoard();
         var diag = [...board].reverse().map((x, y) => x[y]);
 
-        if (allEqual(diag)) {
-            return true;
-        }
-        return false;
+        // Return true or false based on if all equal or not
+        return allEqual(diag);
     }
 
-    const diagonalDown = () => {
-        var board = gameboard.getBoard
+    const diagonalDown = () => { // diag down starts from top left and goes to bottom right
+        var board = gameboard.getBoard();
         var diag = board.map((x, y) => x[y]);
-        if (allEqual(diag)) {
-            return true;
-        }
-        return false;
+
+        return allEqual(diag);
     }
 
     return {rows, columns, diagonalUp, diagonalDown};
@@ -171,16 +167,13 @@ const gameHandler = (function() {
 
     } // end playerInput func
 
-    const checkForWin = (playedTurns) => {
-        if (playedTurns >= 9) {
-            console.log("Tie! No one wins.");
-            gameboard.resetBoard();
-            // No points awarded for a tie
-        } else {
-            // Check each row and column; diagonal consider later
-            var currentBoard = gameboard.getBoard();
-            
-        }
+    const checkForWin = (currentPlayer) => {
+       
+        boardChecker.rows();
+        boardChecker.columns();
+        boardChecker.diagonalUp();
+        boardChecker.diagonalDown();
+
     }
 
     // Return the function
@@ -193,6 +186,7 @@ function createPlayer(name, piece) {
     //
     let score = 0;
     let currentTurn = false; // by default false
+    let winStatus = false;
 
     const getScore = () => score; 
     const addScore = () => score++;
@@ -200,8 +194,11 @@ function createPlayer(name, piece) {
     const getTurnStatus = () => currentTurn; 
     const noTurn = () => {currentTurn = false};
     const isTurn = () => {currentTurn = true};
+    const isWinner = () => winStatus;
+    const won = () => winStatus = true;
+    const resetWin = () => winStatus = false;
 
-    return {name, piece, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn};
+    return {name, piece, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn, isWinner, won, resetWin};
 }
 
 // Make instance of gameboard
