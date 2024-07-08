@@ -13,3 +13,7 @@ The purpose of this project is to reinforce modular programming while interactin
 
 #### Validation
 - Taking user input and checking if it is in an empty spot posed tricky for the second player. My issue was that I tried to take an input as a string, then split and parse it rather than taking two inputs - similar to a button. When attempting to split the two inputs the second would end up as an index outside of the array which caused issues for obvious reasons. Note that this issue was faced while developping for the console; thinking of how this game would be interacted with in a GUI provided more clarity and easier to read code plus reduced this issue.
+
+#### `forEach()`
+- The `forEach()` function cannot be broken in JavaScript. Since `forEach()` runs another function callback on each item in the array, the loop does not terminate with a single return statement.
+- This functionality of the function made checking for win conditions initially very confusing. After debugging, it became clear that the loop did not terminate after the first return; looking into the documentation, it is clear to see that `forEach()` was not the proper implementation of my desired outcome due to the nature of callbacks.

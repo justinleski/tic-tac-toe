@@ -1,5 +1,7 @@
 const allEqual = arr => arr.every( v => (v === arr[0]) && (v != null) ); // Exclude null for the purpose of this game logic
 
+
+
 // make gameboard object
 const gameboard = (function() {
 
@@ -48,6 +50,7 @@ function startGame() {
     var n = 3;
     var playedTurns = 0;
     gameboard.makeBoard(n);
+    displayController.board();
 
     // Create players 1 and 2
     var player1Name = prompt("Player 1 name: ");
@@ -63,20 +66,35 @@ function startGame() {
         if (player1.getTurnStatus() == true){
             console.log("Player 1's turn");
             gameHandler.runPlayerTurn(player1, player2);
+            gameHandler.checkForWin(player1);
+            if (player1.isWinner() == true){
+                console.log("Player 1 wins!");
+                player1.addScore();
+                gameHandler.newRound(player1);
+                playedTurns = 0;
+            }
         } else {
             console.log("Player 2's turn");
             gameHandler.runPlayerTurn(player2, player1);
+            gameHandler.checkForWin(player2);
+            if (player2.isWinner() == true){
+                console.log("Player 2 wins!");
+                player2.addScore();
+                gameHandler.newRound(player2);
+                playedTurns = 0;
+            }
         }
         // Now we have to check for rows/columns of X/Os
         console.table(gameboard.getBoard());
-        console.log("diag up:"+ boardChecker.diagonalUp()); // TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-        console.log("diqag down:"+ boardChecker.diagonalDown());
-        // Check for 
 
         // Increment total count
         playedTurns++;
         console.log("Current no of played turns: "+playedTurns);
-    } while (playedTurns < (n**2 + 1)); // i.e. < 10 when n=3
+    } while (playedTurns < (n**2));
+
+    // If we exceed the number of turns the size of the board, tie
+    console.log("Tie!");
+    startGame();
 
 }
 
@@ -169,15 +187,24 @@ const gameHandler = (function() {
 
     const checkForWin = (currentPlayer) => {
        
-        boardChecker.rows();
-        boardChecker.columns();
-        boardChecker.diagonalUp();
-        boardChecker.diagonalDown();
+        if (
+        boardChecker.rows() ||
+        boardChecker.columns() ||
+        boardChecker.diagonalUp() ||
+        boardChecker.diagonalDown()) {
+            currentPlayer.won();
+        }
 
     }
 
+    const newRound = (winningPlayer) => {
+        winningPlayer.resetWin();
+        startGame();
+    }
+
+
     // Return the function
-    return {runPlayerTurn, getPlayerInput, checkForWin};
+    return {runPlayerTurn, getPlayerInput, checkForWin, newRound};
 
 })();
 
@@ -200,6 +227,34 @@ function createPlayer(name, piece) {
 
     return {name, piece, getScore, addScore, resetScore, getTurnStatus, noTurn, isTurn, isWinner, won, resetWin};
 }
+
+const displayController = (function() {
+
+    // Create variables to manipulate DOM
+    const board = () => {
+        var grid = document.querySelector(".gameGrid");
+        var currBoard = gameboard.getBoard();
+
+        // Count all rows/columns in the grid
+        grid.style.gridTemplateRows = "repeat(3, 1fr)"
+        grid.style.gridTemplateColumns = "repeat(3, 1fr)"
+        // Make an n x n grid on the dom
+
+        // Create buttons for each grid element
+        currBoard.forEach((x, y) => {
+            x.forEach((y) => {
+                console.log("Executed");
+                const boardCell = document.createElement("button");
+                boardCell.setAttribute("xCoord", x);
+                boardCell.setAttribute("yCoord", y);
+                grid.appendChild(boardCell);
+            })
+        })
+    }
+
+    return {board}
+
+})();
 
 // Make instance of gameboard
 startGame();
