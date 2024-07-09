@@ -50,7 +50,7 @@ function startGame() {
     var n = 3;
     var playedTurns = 0;
     gameboard.makeBoard(n);
-    displayController.board();
+    
 
     // Create players 1 and 2
     var player1Name = prompt("Player 1 name: ");
@@ -64,6 +64,7 @@ function startGame() {
     do {
         // Alternate player turns until 9 plays reached, i.e.
         if (player1.getTurnStatus() == true){
+            displayController.fillCell(player1);
             console.log("Player 1's turn");
             gameHandler.runPlayerTurn(player1, player2);
             gameHandler.checkForWin(player1);
@@ -74,6 +75,7 @@ function startGame() {
                 playedTurns = 0;
             }
         } else {
+            displayController.fillCell(player2);
             console.log("Player 2's turn");
             gameHandler.runPlayerTurn(player2, player1);
             gameHandler.checkForWin(player2);
@@ -245,14 +247,20 @@ const displayController = (function() {
             x.forEach((y) => {
                 console.log("Executed");
                 const boardCell = document.createElement("button");
-                boardCell.setAttribute("xCoord", x);
+                boardCell.addEventListener("click", displayController.fillCell(boardCell, currentPlayer));
+                boardCell.classList.add("gridCell")
+                boardCell.setAttribute("xCoord", x); // TODO: FIX!!!!!!!!!!!!!!!!!!!!!!!!!!! THESE ATTRIBITES OF X AND Y ARE A LOGICAL ERROR< these are not indices
                 boardCell.setAttribute("yCoord", y);
                 grid.appendChild(boardCell);
             })
         })
     }
 
-    return {board}
+    const fillCell = (boardCell, currentPlayer) => {
+        boardCell.innerText = currentPlayer.piece;
+    }
+
+    return {board, fillCell}
 
 })();
 
