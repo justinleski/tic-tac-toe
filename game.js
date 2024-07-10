@@ -245,7 +245,7 @@ const displayController = (function() {
             row.forEach((col, colIndex) => {
                 const boardCell = document.createElement("button");
 
-                boardCell.setAttribute("xCoord", rowIndex); // TODO: FIX!!!!!!!!!!!!!!!!!!!!!!!!!!! THESE ATTRIBITES OF X AND Y ARE A LOGICAL ERROR< these are not indices
+                boardCell.setAttribute("xCoord", rowIndex); 
                 boardCell.setAttribute("yCoord", colIndex);
 
                 boardCell.addEventListener("click", function(){
