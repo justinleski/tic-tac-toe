@@ -50,13 +50,14 @@ function startGame() {
     var n = 3;
     var playedTurns = 0;
     gameboard.makeBoard(n);
-    displayController.board();
 
     // Create players 1 and 2
     var player1Name = "1";
     var player2Name = "2";
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
+
+    displayController.board(player1, player2);
 
     // Set turn to start with player 1
     player1.isTurn();
@@ -157,27 +158,6 @@ const gameHandler = (function() {
         gameHandler.newRound(winningPlayer);
     }
 
-    // const runPlayerTurn = (player1, player2, boardCell) => { 
-
-    //     // Check if the who the opposing player is
-    //     currentPlayer = gameHandler.checkTurn(player1, player2);
-    //     if (player1 === currentPlayer) {
-    //         oppPlayer = player2;
-    //     } else {
-    //         oppPlayer = player1;
-    //     }
-
-    //     gameboard.placePiece(boardCell.getAttribute("xCoord"), boardCell.getAttribute("yCoord"), currentPlayer.piece);
-    //     boardCell.disabled = "disabled"; // disable button after press, hence no need for checking validity
-    //     fillCell(boardCell, currentPlayer.piece);
-
-    //     currentPlayer.noTurn();
-
-    //     // Give opposing player a turn
-    //     oppPlayer.isTurn();  
-    // }
-
-
     const checkForWin = (currentPlayer) => {
        
         if (
@@ -250,7 +230,7 @@ const displayController = (function() {
 
                 boardCell.addEventListener("click", function(){
                     // Check if the who the opposing player is
-                    currentPlayer = gameHandler.checkTurn(player1, player2);
+                    var currentPlayer = gameHandler.checkTurn(player1, player2); // problem line
                     if (player1 === currentPlayer) {
                         oppPlayer = player2;
                     } else {
