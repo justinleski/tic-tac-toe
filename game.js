@@ -30,7 +30,7 @@ const gameboard = (function() {
                 boardArr[rowIndex][colIndex] = null;})
         })
     }
-    const checkBoard = (isEmpty, x, y) => {
+    const checkBoard = (isEmpty, x, y) => { // TODO: Remove redundant isEmpty variable
         // Check if user's attempt is valid
         if (boardArr[x][y] != null){
             return isEmpty = false;
@@ -50,11 +50,11 @@ function startGame() {
     var n = 3;
     var playedTurns = 0;
     gameboard.makeBoard(n);
-    
+    displayController.board();
 
     // Create players 1 and 2
-    var player1Name = prompt("Player 1 name: ");
-    var player2Name = prompt("Player 2 name: ");
+    var player1Name = "1";
+    var player2Name = "2";
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
 
@@ -64,25 +64,23 @@ function startGame() {
     do {
         // Alternate player turns until 9 plays reached, i.e.
         if (player1.getTurnStatus() == true){
-            displayController.fillCell(player1);
+            
             console.log("Player 1's turn");
-            gameHandler.runPlayerTurn(player1, player2);
+            //gameHandler.runPlayerTurn(player1, player2);
             gameHandler.checkForWin(player1);
+            
             if (player1.isWinner() == true){
-                console.log("Player 1 wins!");
-                player1.addScore();
-                gameHandler.newRound(player1);
+                playerWins(player1);
                 playedTurns = 0;
             }
         } else {
-            displayController.fillCell(player2);
+            
             console.log("Player 2's turn");
-            gameHandler.runPlayerTurn(player2, player1);
+            //gameHandler.runPlayerTurn(player2, player1);
             gameHandler.checkForWin(player2);
+
             if (player2.isWinner() == true){
-                console.log("Player 2 wins!");
-                player2.addScore();
-                gameHandler.newRound(player2);
+                playerWins(player2);
                 playedTurns = 0;
             }
         }
@@ -96,7 +94,7 @@ function startGame() {
 
     // If we exceed the number of turns the size of the board, tie
     console.log("Tie!");
-    startGame();
+    //startGame();
 
 }
 
@@ -153,39 +151,32 @@ const boardChecker = (function() {
 
 const gameHandler = (function() {
 
-    const runPlayerTurn = (currentPlayer, oppPlayer) => {
-        // Check to see if coords the user selects are valid / empty
-        var turnCoords = [];
-        turnCoords = gameHandler.getPlayerInput(currentPlayer); // function loops until empty coords found
-        console.log("Turn coords are: "+turnCoords[0]);
-
-        // After we checked to see if the coordinates are valid, place the piece
-        gameboard.placePiece((turnCoords[0]), (turnCoords[1]), currentPlayer.piece);
-        currentPlayer.noTurn();
-
-        // Give opposing player a turn
-        oppPlayer.isTurn();  
+    const playerWins = (winningPlayer) => {
+        console.log(winningPlayer.name+" wins!");
+        winningPlayer.addScore();
+        gameHandler.newRound(winningPlayer);
     }
 
-    // Pass in the current player object and get the piece member
-    const getPlayerInput = (currentPlayer) => {
-        var input = [null, null];
-        // Ask player where to put piece
-        var isEmpty = true;
-        do {
-            // Take input convert to string, and split it
-            input[0] = prompt(currentPlayer.name+": coord 1 - ");
-            input[1] = prompt(currentPlayer.name+": coord 2 - ");
+    // const runPlayerTurn = (player1, player2, boardCell) => { 
 
-            // Call gameboard check func
-            isEmpty = gameboard.checkBoard(isEmpty, input[0], input[1]);
-  
-        } while (isEmpty == false); // we want to loop until the user finds an empty spot
+    //     // Check if the who the opposing player is
+    //     currentPlayer = gameHandler.checkTurn(player1, player2);
+    //     if (player1 === currentPlayer) {
+    //         oppPlayer = player2;
+    //     } else {
+    //         oppPlayer = player1;
+    //     }
 
-        // Return the coordinates user provided
-        return input;
+    //     gameboard.placePiece(boardCell.getAttribute("xCoord"), boardCell.getAttribute("yCoord"), currentPlayer.piece);
+    //     boardCell.disabled = "disabled"; // disable button after press, hence no need for checking validity
+    //     fillCell(boardCell, currentPlayer.piece);
 
-    } // end playerInput func
+    //     currentPlayer.noTurn();
+
+    //     // Give opposing player a turn
+    //     oppPlayer.isTurn();  
+    // }
+
 
     const checkForWin = (currentPlayer) => {
        
@@ -204,9 +195,16 @@ const gameHandler = (function() {
         startGame();
     }
 
+    const checkTurn = (player1, player2) => {
+        if (player1.getTurnStatus() == true){
+            return player1;
+        } else {
+            return player2;
+        }
+    }
 
     // Return the function
-    return {runPlayerTurn, getPlayerInput, checkForWin, newRound};
+    return {playerWins, checkForWin, newRound, checkTurn};
 
 })();
 
@@ -233,7 +231,7 @@ function createPlayer(name, piece) {
 const displayController = (function() {
 
     // Create variables to manipulate DOM
-    const board = () => {
+    const board = (player1, player2) => {
         var grid = document.querySelector(".gameGrid");
         var currBoard = gameboard.getBoard();
 
@@ -243,21 +241,40 @@ const displayController = (function() {
         // Make an n x n grid on the dom
 
         // Create buttons for each grid element
-        currBoard.forEach((x, y) => {
-            x.forEach((y) => {
-                console.log("Executed");
+        currBoard.forEach((row, rowIndex) => {
+            row.forEach((col, colIndex) => {
                 const boardCell = document.createElement("button");
-                boardCell.addEventListener("click", displayController.fillCell(boardCell, currentPlayer));
+
+                boardCell.setAttribute("xCoord", rowIndex); // TODO: FIX!!!!!!!!!!!!!!!!!!!!!!!!!!! THESE ATTRIBITES OF X AND Y ARE A LOGICAL ERROR< these are not indices
+                boardCell.setAttribute("yCoord", colIndex);
+
+                boardCell.addEventListener("click", function(){
+                    // Check if the who the opposing player is
+                    currentPlayer = gameHandler.checkTurn(player1, player2);
+                    if (player1 === currentPlayer) {
+                        oppPlayer = player2;
+                    } else {
+                        oppPlayer = player1;
+                    }
+
+                    gameboard.placePiece(boardCell.getAttribute("xCoord"), boardCell.getAttribute("yCoord"), currentPlayer.piece);
+                    boardCell.disabled = "disabled"; // disable button after press, hence no need for checking validity
+                    fillCell(boardCell, currentPlayer.piece);
+
+                    currentPlayer.noTurn();
+
+                    // Give opposing player a turn
+                    oppPlayer.isTurn();  
+                });
                 boardCell.classList.add("gridCell")
-                boardCell.setAttribute("xCoord", x); // TODO: FIX!!!!!!!!!!!!!!!!!!!!!!!!!!! THESE ATTRIBITES OF X AND Y ARE A LOGICAL ERROR< these are not indices
-                boardCell.setAttribute("yCoord", y);
+                
                 grid.appendChild(boardCell);
             })
         })
     }
 
-    const fillCell = (boardCell, currentPlayer) => {
-        boardCell.innerText = currentPlayer.piece;
+    const fillCell = (boardCell, piece) => {
+        boardCell.innerText = piece;
     }
 
     return {board, fillCell}
