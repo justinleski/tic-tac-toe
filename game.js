@@ -155,6 +155,7 @@ const gameHandler = (function() {
     const playerWins = (winningPlayer) => {
         console.log(winningPlayer.name+" wins!");
         winningPlayer.addScore();
+        displayController.win(winningPlayer);
         gameHandler.newRound(winningPlayer);
     }
 
@@ -241,6 +242,14 @@ const displayController = (function() {
                     boardCell.disabled = "disabled"; // disable button after press, hence no need for checking validity
                     fillCell(boardCell, currentPlayer.piece);
 
+                    gameHandler.checkForWin(currentPlayer);
+                    if (currentPlayer.isWinner() == true){
+                        gameHandler.playerWins(currentPlayer);
+                        // playedTurns = 0;
+                    }
+
+                    // Check if turns are < 9 ; can maybe be IIFE?
+
                     currentPlayer.noTurn();
 
                     // Give opposing player a turn
@@ -257,7 +266,33 @@ const displayController = (function() {
         boardCell.innerText = piece;
     }
 
-    return {board, fillCell}
+    const win = (currentPlayer) => {
+        // Modal pops up when game ends
+        head = document.querySelector("#winModal #winMsg");
+        pg = document.querySelector("#winModal p");
+
+        head.innerText(currentPlayer.name + " wins");
+        pg.innerText("Total wins: "+currentPlayer.getScore);
+
+        // Make elements show after setting custom values
+        modalPopup();
+    }
+
+    const tie = () => {
+        // Modal pops up when game ends
+        head = document.querySelector("#winModal #winMsg");
+        pg = document.querySelector("#winModal p");
+
+        head.innerText("Tie");
+        pg.innerText("No one wins.");
+        modalPopup();
+    }
+
+    const modalPopup = () => {
+        document.querySelector("#winModal").classList.add("active");
+    }
+
+    return {board, fillCell, win, tie, modalPopup}
 
 })();
 
