@@ -1,3 +1,4 @@
+const jsConfetti = new JSConfetti();
 const allEqual = arr => arr.every( v => (v === arr[0]) && (v != null) ); // Exclude null for the purpose of this game logic
 
 
@@ -291,6 +292,13 @@ const displayController = (function() {
 
     const win = (currentPlayer) => {
         // Modal pops up when game ends
+        jsConfetti.addConfetti({
+            confettiColors: [
+                '#5aa9e6', '#7fc8f8', '#f9f9f9', '#ffe45e',
+            ],
+            confettiRadius: 8,
+            confettiNumber: 800,
+        });
         head = document.querySelector("#winModal #winMsg");
         pg = document.querySelector("#winModal p");
 
