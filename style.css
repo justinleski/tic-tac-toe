@@ -22,6 +22,11 @@ p, h1, h2, h3, h4, h5, h6 {
     isolation: isolate;
 }
 
+:root {
+    --accent-color-primary: #7fc8f8;
+    --accent-color-side: #ffe45e;
+}
+
 h1 {
     font-size: 300%;
 }
@@ -42,7 +47,7 @@ button {
     display: grid;
     grid-gap: 8px;
     max-width: 100vw;
-    max-height: 100vh;
+    height: auto;
 }
 
 .gameGrid button {
@@ -83,6 +88,7 @@ button {
     border-radius: 1.5rem;
     min-width: 50%;
     padding: 8px;
+    background: var(--accent-color-side);
 }
 
 #overlay {
@@ -112,4 +118,17 @@ button {
 
 .exitBtn:hover {
     color: rgb(47, 39, 39);
+}
+
+#currentTurn {
+    margin: 16px;
+    padding: 32px;
+    font-size: 2rem;
+    border-radius: 1.5rem;
+    background-color: var(--accent-color-primary);
+    overflow: hidden;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

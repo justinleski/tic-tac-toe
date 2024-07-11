@@ -26,7 +26,7 @@ const gameboard = (function() {
     const getBoard = () => boardArr;
     const resetBoard = () => {
         boardArr.forEach((row, rowIndex) => {
-            row.forEach((colIndex) => {
+            row.forEach((col, colIndex) => {
                 boardArr[rowIndex][colIndex] = null;})
         })
     }
@@ -52,8 +52,8 @@ function startGame() {
     gameboard.makeBoard(n);
 
     // Create players 1 and 2
-    var player1Name = "1";
-    var player2Name = "2";
+    var player1Name = "Player 1";
+    var player2Name = "Player 2";
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
 
@@ -62,39 +62,39 @@ function startGame() {
     // Set turn to start with player 1
     player1.isTurn();
 
-    do {
-        // Alternate player turns until 9 plays reached, i.e.
-        if (player1.getTurnStatus() == true){
+    // do {
+    //     // Alternate player turns until 9 plays reached, i.e.
+    //     if (player1.getTurnStatus() == true){
             
-            console.log("Player 1's turn");
-            //gameHandler.runPlayerTurn(player1, player2);
-            gameHandler.checkForWin(player1);
+    //         console.log("Player 1's turn");
+    //         //gameHandler.runPlayerTurn(player1, player2);
+    //         gameHandler.checkForWin(player1);
             
-            if (player1.isWinner() == true){
-                playerWins(player1);
-                playedTurns = 0;
-            }
-        } else {
+    //         if (player1.isWinner() == true){
+    //             playerWins(player1);
+    //             playedTurns = 0;
+    //         }
+    //     } else {
             
-            console.log("Player 2's turn");
-            //gameHandler.runPlayerTurn(player2, player1);
-            gameHandler.checkForWin(player2);
+    //         console.log("Player 2's turn");
+    //         //gameHandler.runPlayerTurn(player2, player1);
+    //         gameHandler.checkForWin(player2);
 
-            if (player2.isWinner() == true){
-                playerWins(player2);
-                playedTurns = 0;
-            }
-        }
-        // Now we have to check for rows/columns of X/Os
-        console.table(gameboard.getBoard());
+    //         if (player2.isWinner() == true){
+    //             playerWins(player2);
+    //             playedTurns = 0;
+    //         }
+    //     }
+    //     // Now we have to check for rows/columns of X/Os
+    //     console.table(gameboard.getBoard());
 
-        // Increment total count
-        playedTurns++;
-        console.log("Current no of played turns: "+playedTurns);
-    } while (playedTurns < (n**2));
+    //     // Increment total count
+    //     playedTurns++;
+    //     console.log("Current no of played turns: "+playedTurns);
+    // } while (playedTurns < (n**2));
 
     // If we exceed the number of turns the size of the board, tie
-    console.log("Tie!");
+    //console.log("Tie!");
     //startGame();
 
 }
@@ -241,12 +241,14 @@ const displayController = (function() {
 
                 boardCell.addEventListener("click", function(){
                     // Check if the who the opposing player is
-                    var currentPlayer = gameHandler.checkTurn(player1, player2); // problem line
+                    var currentPlayer = gameHandler.checkTurn(player1, player2);                     
                     if (player1 === currentPlayer) {
                         oppPlayer = player2;
                     } else {
                         oppPlayer = player1;
                     }
+                    // Since they have the next turn after the press, show opp name for turn on click
+                    displayController.dispTurn(oppPlayer);
 
                     gameboard.placePiece(boardCell.getAttribute("xCoord"), boardCell.getAttribute("yCoord"), currentPlayer.piece);
                     boardCell.disabled = "disabled"; // disable button after press, hence no need for checking validity
@@ -257,15 +259,10 @@ const displayController = (function() {
                         gameHandler.playerWins(currentPlayer);
                     }
                     
-                    // !!! TODO !!! FIX
-                    console.log("Rounds tracked: "+roundTracker.get());
 
                     if(roundTracker.get() > 8) {
                         displayController.tie();
                     } 
-
-                    // Check if turns are < 9 ; can maybe be IIFE?
-
                     currentPlayer.noTurn();
 
                     // Give opposing player a turn
@@ -284,12 +281,12 @@ const displayController = (function() {
     }
 
     const reset = () => {
-        boardCells = document.querySelector(".gameGrid").children;
+        collection = document.querySelector(".gameGrid").children;
         // Enable all cells to be clicked on once again
-        boardCells.forEach((cell) =>{
-            cell.disabled = false;
-            cell.innerText = " ";
-        });
+        for (let i = 0; i < collection.length; i++) {
+            collection[i].disabled = false;
+            collection[i].innerText = " ";
+        }
     }
 
     const win = (currentPlayer) => {
@@ -306,7 +303,6 @@ const displayController = (function() {
 
     const tie = () => {
         // Modal pops up when game ends
-        console.log("DOes the tie display controller work?");
         head = document.querySelector("#winModal #winMsg");
         pg = document.querySelector("#winModal p");
 
@@ -327,14 +323,20 @@ const displayController = (function() {
         document.querySelector("#winModal").classList.remove("active");
     }
 
-    return {board, fillCell, reset, win, tie, modalPopup, closeModal}
+    const dispTurn = (currentPlayer) => {
+        document.querySelector("#currentTurn").innerText = currentPlayer.name+"'s turn";
+    }
+
+    return {board, fillCell, reset, win, tie, modalPopup, closeModal, dispTurn}
 
 })();
 
+// This is the new roun button on the modal after the game
 document.querySelector("#winModal button").addEventListener("click", () => {
     displayController.reset(); // clears board
     displayController.closeModal(); // closes modal pop-up
-
+    gameboard.resetBoard(); // resets array
+    roundTracker.reset();
 });
 
 // Make instance of gameboard
