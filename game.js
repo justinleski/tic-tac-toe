@@ -150,6 +150,14 @@ const boardChecker = (function() {
 
 })();
 
+const roundTracker = (function() {
+    rounds = 1; // set to 1 since we check before adding
+    const add = () => rounds++;
+    const reset = () => rounds = 1;
+    const get = () => rounds;
+    return {add, reset, get}
+})();
+
 const gameHandler = (function() {
 
     const playerWins = (winningPlayer) => {
@@ -173,7 +181,8 @@ const gameHandler = (function() {
 
     const newRound = (winningPlayer) => {
         winningPlayer.resetWin();
-        startGame();
+        gameboard.resetBoard();
+        roundTracker.reset();
     }
 
     const checkTurn = (player1, player2) => {
@@ -228,6 +237,7 @@ const displayController = (function() {
 
                 boardCell.setAttribute("xCoord", rowIndex); 
                 boardCell.setAttribute("yCoord", colIndex);
+                boardCell.classList.add("gridCell");
 
                 boardCell.addEventListener("click", function(){
                     // Check if the who the opposing player is
@@ -245,8 +255,14 @@ const displayController = (function() {
                     gameHandler.checkForWin(currentPlayer);
                     if (currentPlayer.isWinner() == true){
                         gameHandler.playerWins(currentPlayer);
-                        // playedTurns = 0;
                     }
+                    
+                    // !!! TODO !!! FIX
+                    console.log("Rounds tracked: "+roundTracker.get());
+
+                    if(roundTracker.get() > 8) {
+                        displayController.tie();
+                    } 
 
                     // Check if turns are < 9 ; can maybe be IIFE?
 
@@ -254,8 +270,9 @@ const displayController = (function() {
 
                     // Give opposing player a turn
                     oppPlayer.isTurn();  
+                    roundTracker.add();
                 });
-                boardCell.classList.add("gridCell")
+                
                 
                 grid.appendChild(boardCell);
             })
@@ -266,13 +283,22 @@ const displayController = (function() {
         boardCell.innerText = piece;
     }
 
+    const reset = () => {
+        boardCells = document.querySelector(".gameGrid").children;
+        // Enable all cells to be clicked on once again
+        boardCells.forEach((cell) =>{
+            cell.disabled = false;
+            cell.innerText = " ";
+        });
+    }
+
     const win = (currentPlayer) => {
         // Modal pops up when game ends
         head = document.querySelector("#winModal #winMsg");
         pg = document.querySelector("#winModal p");
 
-        head.innerText(currentPlayer.name + " wins");
-        pg.innerText("Total wins: "+currentPlayer.getScore);
+        head.innerText = currentPlayer.name + " wins";
+        pg.innerText = "Total wins: "+currentPlayer.getScore();
 
         // Make elements show after setting custom values
         modalPopup();
@@ -280,21 +306,36 @@ const displayController = (function() {
 
     const tie = () => {
         // Modal pops up when game ends
+        console.log("DOes the tie display controller work?");
         head = document.querySelector("#winModal #winMsg");
         pg = document.querySelector("#winModal p");
 
-        head.innerText("Tie");
-        pg.innerText("No one wins.");
+        head.innerText = "Tie";
+        pg.innerText = "No one wins.";
         modalPopup();
     }
 
     const modalPopup = () => {
+        // Make modal pop up and grey out bg
+        document.querySelector("#overlay").classList.add("active")
         document.querySelector("#winModal").classList.add("active");
     }
 
-    return {board, fillCell, win, tie, modalPopup}
+    const closeModal = () => {
+        // Remvoe class
+        document.querySelector("#overlay").classList.remove("active")
+        document.querySelector("#winModal").classList.remove("active");
+    }
+
+    return {board, fillCell, reset, win, tie, modalPopup, closeModal}
 
 })();
+
+document.querySelector("#winModal button").addEventListener("click", () => {
+    displayController.reset(); // clears board
+    displayController.closeModal(); // closes modal pop-up
+
+});
 
 // Make instance of gameboard
 startGame();
