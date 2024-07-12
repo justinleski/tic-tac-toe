@@ -33,7 +33,7 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-    font-size: 300%;
+    font-size: 3rem;
 }
 
 button {
@@ -185,4 +185,23 @@ input {
 
 .popIn {
     animation: scaleIn 0.05s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+@media screen and (max-width: 600px){
+    h1 {
+        font-size: 2rem;
+    }
+    .gameGrid button {
+        font-size: 10em;
+        min-height: 15vh;
+        min-width: 15vh;
+        font-size: 8em;
+    }
+    .gameGrid { 
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+    #currentTurn {
+        font-size: 1.5rem;
+    }
 }
