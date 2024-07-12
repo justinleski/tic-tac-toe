@@ -1,7 +1,6 @@
 const jsConfetti = new JSConfetti();
 const allEqual = arr => arr.every( v => (v === arr[0]) && (v != null) ); // Exclude null for the purpose of this game logic
-
-
+const synth = new Tone.MonoSynth().toDestination();
 
 // make gameboard object
 const gameboard = (function() {
@@ -130,6 +129,7 @@ const roundTracker = (function() {
 const gameHandler = (function() {
 
     const playerWins = (winningPlayer) => {
+        synth.triggerAttackRelease("G4", "8n");
         console.log(winningPlayer.name+" wins!");
         winningPlayer.addScore();
         displayController.win(winningPlayer);
@@ -212,8 +212,10 @@ const displayController = (function() {
                     // Check if the who the opposing player is
                     var currentPlayer = gameHandler.checkTurn(player1, player2);                     
                     if (player1 === currentPlayer) {
+                        synth.triggerAttackRelease("A4", "15n");
                         oppPlayer = player2;
                     } else {
+                        synth.triggerAttackRelease("D4", "15n");
                         oppPlayer = player1;
                     }
                     // Since they have the next turn after the press, show opp name for turn on click
@@ -228,7 +230,6 @@ const displayController = (function() {
                         gameHandler.playerWins(currentPlayer);
                     }
                     
-
                     if(roundTracker.get() > 8) {
                         displayController.tie();
                     } 
@@ -237,6 +238,7 @@ const displayController = (function() {
                     // Give opposing player a turn
                     oppPlayer.isTurn();  
                     roundTracker.add();
+                    displayController.score(player1, player2);
                 });
                 
                 
@@ -246,6 +248,7 @@ const displayController = (function() {
     }
 
     const fillCell = (boardCell, piece) => {
+        boardCell.classList.add("popIn");
         boardCell.innerText = piece;
     }
 
@@ -255,6 +258,7 @@ const displayController = (function() {
         for (let i = 0; i < collection.length; i++) {
             collection[i].disabled = false;
             collection[i].innerText = " ";
+            collection[i].classList.remove("popIn");
         }
     }
 
@@ -303,7 +307,7 @@ const displayController = (function() {
         document.querySelector("#currentTurn").innerText = currentPlayer.name+"'s turn";
     }
 
-    // ???
+    // Change based on text field input
     const changeName1 = (currentPlayer) => {
         p1Tag = document.querySelector("#p1Name");
         p1Tag.addEventListener("input", () => {
@@ -320,8 +324,16 @@ const displayController = (function() {
         
     }
 
+    const score = (player1, player2) => {
+        box1 = document.querySelector("#p1Score");
+        box2 = document.querySelector("#p2Score");
 
-    return {board, fillCell, reset, win, tie, modalPopup, closeModal, dispTurn, changeName1, changeName2}
+        box1.innerText = player1.getScore();
+        box2.innerText = player2.getScore();
+    }
+
+
+    return {board, fillCell, reset, win, tie, modalPopup, closeModal, dispTurn, changeName1, changeName2, score}
 
 })();
 

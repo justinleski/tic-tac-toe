@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="game.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script src="http://unpkg.com/tone"></script>
 
 </head>
 <body>
@@ -23,8 +24,14 @@
 
         <!--Get user names-->
         <div class="nameChange">
-            <input type="text" placeholder="Player 1" id="p1Name">
-            <input type="text" placeholder="Player 2" id="p2Name">
+            <div class="scoreTracker">
+                <input type="text" placeholder="Player 1" id="p1Name">
+                <p id="p1Score">0</p>
+            </div>
+            <div class="scoreTracker">
+                <input type="text" placeholder="Player 2" id="p2Name">
+                <p id="p2Score">0</p>
+            </div>
         </div>
 
         <div class="gameGrid">

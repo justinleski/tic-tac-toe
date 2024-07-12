@@ -156,4 +156,33 @@ input {
 
 .nameChange {
     margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.scoreTracker {
+    display: flex;
+    align-items: center;
+}
+
+.scoreTracker p {
+    border-radius: 1rem;
+    background-color: var(--accent-color-primary);
+    padding: 4px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.popIn {
+    animation: scaleIn 0.05s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
