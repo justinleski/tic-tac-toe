@@ -304,7 +304,7 @@ const displayController = (function() {
     }
 
     const dispTurn = (currentPlayer) => {
-        document.querySelector("#currentTurn").innerText = currentPlayer.name+"'s turn";
+        document.querySelector("#currentTurn").innerText = currentPlayer.name+"'s turn "+"("+currentPlayer.piece+")";
     }
 
     // Change based on text field input
