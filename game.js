@@ -49,7 +49,6 @@ function startGame() {
 
     // Make board
     var n = 3;
-    var playedTurns = 0;
     gameboard.makeBoard(n);
 
     // Create players 1 and 2
@@ -58,45 +57,14 @@ function startGame() {
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
 
+    // Allow user to change name
+    displayController.changeName1(player1);
+    displayController.changeName2(player2);
+
     displayController.board(player1, player2);
 
     // Set turn to start with player 1
     player1.isTurn();
-
-    // do {
-    //     // Alternate player turns until 9 plays reached, i.e.
-    //     if (player1.getTurnStatus() == true){
-            
-    //         console.log("Player 1's turn");
-    //         //gameHandler.runPlayerTurn(player1, player2);
-    //         gameHandler.checkForWin(player1);
-            
-    //         if (player1.isWinner() == true){
-    //             playerWins(player1);
-    //             playedTurns = 0;
-    //         }
-    //     } else {
-            
-    //         console.log("Player 2's turn");
-    //         //gameHandler.runPlayerTurn(player2, player1);
-    //         gameHandler.checkForWin(player2);
-
-    //         if (player2.isWinner() == true){
-    //             playerWins(player2);
-    //             playedTurns = 0;
-    //         }
-    //     }
-    //     // Now we have to check for rows/columns of X/Os
-    //     console.table(gameboard.getBoard());
-
-    //     // Increment total count
-    //     playedTurns++;
-    //     console.log("Current no of played turns: "+playedTurns);
-    // } while (playedTurns < (n**2));
-
-    // If we exceed the number of turns the size of the board, tie
-    //console.log("Tie!");
-    //startGame();
 
 }
 
@@ -335,7 +303,25 @@ const displayController = (function() {
         document.querySelector("#currentTurn").innerText = currentPlayer.name+"'s turn";
     }
 
-    return {board, fillCell, reset, win, tie, modalPopup, closeModal, dispTurn}
+    // ???
+    const changeName1 = (currentPlayer) => {
+        p1Tag = document.querySelector("#p1Name");
+        p1Tag.addEventListener("input", () => {
+            currentPlayer.name = p1Tag.value;
+        });
+        
+    }
+
+    const changeName2 = (currentPlayer) => {
+        p2Tag = document.querySelector("#p2Name");
+        p2Tag.addEventListener("input", () => {
+            currentPlayer.name = p2Tag.value;
+        });
+        
+    }
+
+
+    return {board, fillCell, reset, win, tie, modalPopup, closeModal, dispTurn, changeName1, changeName2}
 
 })();
 

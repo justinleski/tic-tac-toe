@@ -57,6 +57,7 @@ button {
 }
 
 .gameGrid button {
+    color: black;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,10 +68,6 @@ button {
 
     border: 0;
     border-radius: 20%;
-}
-
-.gameGrid button{
-    color: black;
 }
 
 #winModal {
@@ -146,4 +143,17 @@ button {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+input {
+    font-family: var(--main-font);
+    border: 0;
+    border-radius: 1rem;
+    background-color: var(--accent-color-side);
+    padding: 4px;
+    margin: 4px;
+}
+
+.nameChange {
+    margin-bottom: 32px;
 }
